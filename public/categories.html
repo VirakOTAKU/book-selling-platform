@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categories - BookSelling</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="logo" href="/">BookSelling</a>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/categories.html">Categories</a></li>
+                    <li><a href="/aboutus.html">About us</a></li>
+                    <li><a href="/contactus.html">Contact us</a></li>
+                </ul>
+            </nav>
+            <div class="profile">
+                <button class="profile-btn" aria-expanded="false"><span id="profile-display">Profile</span> ▾</button>
+                <div class="profile-menu">
+                    <a class="btn login" href="/login.html" id="login-link">Log in</a>
+                    <a class="btn register" href="/register.html" id="register-link">Register</a>
+                    <a class="btn logout" href="#" id="logout-link" style="display:none">Log out</a>
+                </div>
+            </div>
+            <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+        </div>
+    </header>
+
+    <main class="container main-content">
+        <section class="search-section">
+            <div class="search-box">
+                <input id="search-input" type="search" placeholder="Search books..." aria-label="Search books">
+                <select id="search-cat" aria-label="Category select">
+                    <option value="all">All categories</option>
+                    <option>Fiction</option>
+                    <option>Non-fiction</option>
+                    <option>Children</option>
+                    <option>Science</option>
+                    <option>Biographies</option>
+                    <option>Self-help</option>
+                </select>
+                <button id="search-go" class="btn search-btn">Search</button>
+            </div>
+        </section>
+
+        <section class="featured-books">
+            <h2 id="page-title">Books</h2>
+            <div class="book-grid" id="books-container">
+                <p>Loading books...</p>
+            </div>
+        </section>
+
+        <div id="pagination" style="text-align:center;margin:2rem 0;display:none">
+            <button id="prev-btn" class="btn" style="margin-right:0.5rem">Previous</button>
+            <span id="page-info"></span>
+            <button id="next-btn" class="btn" style="margin-left:0.5rem">Next</button>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div class="footer-col">
+                <h4>About</h4>
+                <p>BookSelling is a professional marketplace for readers and sellers.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container"><span>© <span id="year"></span> BookSelling. All rights reserved.</span></div>
+        </div>
+    </footer>
+
+    <script src="api.js"></script>
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        let currentPage = 1;
+        let currentCategory = 'all';
+        let currentSearch = '';
+
+        async function loadBooks() {
+            try {
+                const result = await Books.getAll(currentPage, 12, currentCategory, currentSearch);
+                const container = document.getElementById('books-container');
+                
+                if (result.books.length === 0) {
+                    container.innerHTML = '<p>No books found.</p>';
+                    return;
+                }
+
+                container.innerHTML = result.books.map(book => `
+                    <article class="book-card">
+                        <img class="book-img" src="${book.image}" alt="Cover of ${book.title}">
+                        <div class="book-info">
+                            <div class="book-meta">
+                                <div>
+                                    <h3 class="book-title">${book.title}</h3>
+                                    <p class="book-author">by ${book.author}</p>
+                                    <p class="book-cat">${book.category}</p>
+                                </div>
+                                <div>
+                                    <div class="price">$${book.price.toFixed(2)}</div>
+                                    <button class="view-btn" data-id="${book._id}">View</button>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                `).join('');
+
+                // Update pagination
+                const pagination = document.getElementById('pagination');
+                if (result.pagination.pages > 1) {
+                    pagination.style.display = 'block';
+                    document.getElementById('page-info').textContent = `Page ${result.pagination.page} of ${result.pagination.pages}`;
+                    document.getElementById('prev-btn').disabled = currentPage === 1;
+                    document.getElementById('next-btn').disabled = currentPage === result.pagination.pages;
+                }
+            } catch (error) {
+                document.getElementById('books-container').innerHTML = `<p>Error loading books: ${error.message}</p>`;
+            }
+        }
+
+        // Get URL parameters
+        const params = new URLSearchParams(window.location.search);
+        currentCategory = params.get('cat') || 'all';
+        currentSearch = params.get('q') || '';
+
+        const titleEl = document.getElementById('page-title');
+        if (currentCategory && currentCategory !== 'all') {
+            titleEl.textContent = currentCategory + ' Books';
+        }
+
+        loadBooks();
+
+        document.getElementById('search-go').addEventListener('click', () => {
+            currentSearch = document.getElementById('search-input').value;
+            currentCategory = document.getElementById('search-cat').value;
+            currentPage = 1;
+            loadBooks();
+        });
+
+        document.getElementById('prev-btn').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                loadBooks();
+                window.scrollTo(0, 0);
+            }
+        });
+
+        document.getElementById('next-btn').addEventListener('click', () => {
+            currentPage++;
+            loadBooks();
+            window.scrollTo(0, 0);
+        });
+    </script>
+</body>
+</html>

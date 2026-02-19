@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - BookSelling</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="logo" href="/">BookSelling</a>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/categories.html">Categories</a></li>
+                    <li><a href="/aboutus.html">About us</a></li>
+                    <li><a href="/contactus.html">Contact us</a></li>
+                </ul>
+            </nav>
+            <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+        </div>
+    </header>
+
+    <main class="container main-content">
+        <section style="margin:2rem 0">
+            <h1>About BookSelling</h1>
+            <p style="color:var(--muted);margin:1rem 0;font-size:1.1rem">We connect book lovers with quality books and passionate sellers worldwide.</p>
+            
+            <div style="background:linear-gradient(135deg,#f8fbff,#fff);border:1px solid #e0eaff;padding:1.5rem;border-radius:10px;margin:2rem 0">
+                <h2>Our Mission</h2>
+                <p>BookSelling exists to make quality books accessible to everyone, supporting both readers seeking their next great read and sellers sharing their passion for literature.</p>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0">
+                <div style="background:#fff;border:1px solid #eef3ff;padding:1.5rem;border-radius:10px;text-align:center">
+                    <h3 style="color:var(--primary);margin-bottom:0.5rem">10K+</h3>
+                    <p>Books Listed</p>
+                </div>
+                <div style="background:#fff;border:1px solid #eef3ff;padding:1.5rem;border-radius:10px;text-align:center">
+                    <h3 style="color:var(--primary);margin-bottom:0.5rem">5K+</h3>
+                    <p>Happy Users</p>
+                </div>
+                <div style="background:#fff;border:1px solid #eef3ff;padding:1.5rem;border-radius:10px;text-align:center">
+                    <h3 style="color:var(--primary);margin-bottom:0.5rem">2024</h3>
+                    <p>Founded</p>
+                </div>
+            </div>
+
+            <div style="background:linear-gradient(135deg,#f8fbff,#fff);border:1px solid #e0eaff;padding:1.5rem;border-radius:10px;margin:2rem 0">
+                <h2>Why Choose Us?</h2>
+                <ul style="margin-left:1.5rem">
+                    <li style="margin:0.5rem 0">Secure and trusted platform</li>
+                    <li style="margin:0.5rem 0">Wide selection of books across genres</li>
+                    <li style="margin:0.5rem 0">Competitive pricing and regular discounts</li>
+                    <li style="margin:0.5rem 0">Fast shipping and reliable service</li>
+                    <li style="margin:0.5rem 0">Professional customer support</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div class="footer-col"><h4>About</h4><p>BookSelling is a professional marketplace for readers and sellers.</p></div>
+        </div>
+        <div class="footer-bottom"><div class="container"><span>© <span id="year"></span> BookSelling.</span></div></div>
+    </footer>
+
+    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

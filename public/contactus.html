@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - BookSelling</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="logo" href="/">BookSelling</a>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/categories.html">Categories</a></li>
+                    <li><a href="/aboutus.html">About us</a></li>
+                    <li><a href="/contactus.html">Contact us</a></li>
+                </ul>
+            </nav>
+            <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+        </div>
+    </header>
+
+    <main class="container main-content">
+        <section style="margin:2rem 0">
+            <h1>Contact Us</h1>
+            <p style="color:var(--muted);margin:1rem 0">We'd love to hear from you. Get in touch with our team.</p>
+            
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin:2rem 0">
+                <div>
+                    <h2>Get in Touch</h2>
+                    <form style="display:grid;gap:1rem">
+                        <input type="text" placeholder="Your Name" required style="padding:0.75rem;border:1px solid #e6e9ef;border-radius:8px">
+                        <input type="email" placeholder="Your Email" required style="padding:0.75rem;border:1px solid #e6e9ef;border-radius:8px">
+                        <textarea placeholder="Message" required style="padding:0.75rem;border:1px solid #e6e9ef;border-radius:8px;resize:vertical;min-height:120px"></textarea>
+                        <button type="submit" class="btn">Send Message</button>
+                    </form>
+                </div>
+
+                <div>
+                    <h2>Contact Info</h2>
+                    <div style="background:#fff;border:1px solid #eef3ff;padding:1rem;border-radius:10px;margin-bottom:1rem">
+                        <h4>Email</h4>
+                        <p><a href="mailto:support@bookselling.example" style="color:var(--primary);text-decoration:none">support@bookselling.example</a></p>
+                    </div>
+                    <div style="background:#fff;border:1px solid #eef3ff;padding:1rem;border-radius:10px;margin-bottom:1rem">
+                        <h4>Phone</h4>
+                        <p>+1 (555) 123-4567</p>
+                    </div>
+                    <div style="background:#fff;border:1px solid #eef3ff;padding:1rem;border-radius:10px">
+                        <h4>Hours</h4>
+                        <p>Monday - Friday: 9 AM - 6 PM<br>Saturday: 10 AM - 4 PM<br>Sunday: Closed</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div class="footer-col"><h4>About</h4><p>BookSelling is a professional marketplace for readers and sellers.</p></div>
+        </div>
+        <div class="footer-bottom"><div class="container"><span>© <span id="year"></span> BookSelling.</span></div></div>
+    </footer>
+
+    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: book-selling-platform
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: MONGODB_URI
+        scope: build,runtime
+        value: mongodb+srv://username:password@cluster.mongodb.net/book-selling
+      - key: JWT_SECRET
+        scope: runtime
+        value: your-secret-key-here
+      - key: NODE_ENV
+        scope: runtime
+        value: production

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - BookSelling</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="logo" href="/">BookSelling</a>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/categories.html">Categories</a></li>
+                    <li><a href="/aboutus.html">About us</a></li>
+                    <li><a href="/contactus.html">Contact us</a></li>
+                </ul>
+            </nav>
+            <div class="profile">
+                <button class="profile-btn" aria-expanded="false"><span id="profile-display">Profile</span> ▾</button>
+                <div class="profile-menu">
+                    <a class="btn login" href="/login.html" id="login-link">Log in</a>
+                    <a class="btn register" href="/register.html" id="register-link">Register</a>
+                    <a class="btn logout" href="#" id="logout-link" style="display:none">Log out</a>
+                </div>
+            </div>
+            <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+        </div>
+    </header>
+
+    <main class="container main-content" style="min-height:calc(100vh - 200px)">
+        <section class="auth-section">
+            <h1>My Profile</h1>
+
+            <div id="message"></div>
+
+            <div class="profile-grid">
+                <div class="auth-card">
+                    <h2>Profile Information</h2>
+                    <form id="profile-form" class="auth-form">
+                        <input type="text" id="firstName" placeholder="First Name" required>
+                        <input type="text" id="lastName" placeholder="Last Name" required>
+                        <input type="email" id="email" placeholder="Email" disabled>
+                        <input type="tel" id="phone" placeholder="Phone Number">
+                        <textarea id="bio" placeholder="Bio" style="padding:0.95rem;border:1.5px solid #e0eaff;border-radius:10px;resize:vertical;font-family:inherit"></textarea>
+                        <button type="submit" class="auth-btn">Update Profile</button>
+                    </form>
+                </div>
+
+                <div class="auth-card">
+                    <h2>Account</h2>
+                    <p id="user-email" style="margin-bottom:1rem;color:var(--muted)"></p>
+                    <p id="user-role" style="margin-bottom:1rem;color:var(--muted)"></p>
+                    <p id="joined-date" style="margin-bottom:1.5rem;color:var(--muted)"></p>
+                    <button type="button" id="logout-btn" class="auth-btn" style="background:#ff6b6b">Logout</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div class="footer-col"><h4>About</h4><p>BookSelling is a professional marketplace for readers and sellers.</p></div>
+        </div>
+        <div class="footer-bottom"><div class="container"><span>© <span id="year"></span> BookSelling.</span></div></div>
+    </footer>
+
+    <script src="api.js"></script>
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Check authentication
+        if (!isAuthenticated()) {
+            window.location.href = '/login.html';
+        }
+
+        const user = getCurrentUser();
+        const form = document.getElementById('profile-form');
+        const messageDiv = document.getElementById('message');
+
+        // Load user profile
+        async function loadProfile() {
+            try {
+                const profile = await Users.getProfile();
+                document.getElementById('firstName').value = profile.firstName || '';
+                document.getElementById('lastName').value = profile.lastName || '';
+                document.getElementById('email').value = profile.email || '';
+                document.getElementById('phone').value = profile.phone || '';
+                document.getElementById('bio').value = profile.bio || '';
+
+                document.getElementById('user-email').textContent = 'Email: ' + profile.email;
+                document.getElementById('user-role').textContent = 'Role: ' + (profile.role || 'customer');
+                document.getElementById('joined-date').textContent = 'Joined: ' + new Date(profile.createdAt).toLocaleDateString();
+            } catch (error) {
+                messageDiv.innerHTML = `<div class="auth-error">Error loading profile: ${error.message}</div>`;
+            }
+        }
+
+        loadProfile();
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            try {
+                const result = await Users.updateProfile({
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    phone: document.getElementById('phone').value,
+                    bio: document.getElementById('bio').value
+                });
+
+                messageDiv.innerHTML = '<div class="auth-success">Profile updated successfully!</div>';
+                setTimeout(() => {
+                    messageDiv.innerHTML = '';
+                }, 3000);
+            } catch (error) {
+                messageDiv.innerHTML = `<div class="auth-error">Error updating profile: ${error.message}</div>`;
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            Auth.logout();
+            window.location.href = '/';
+        });
+    </script>
+</body>
+</html>

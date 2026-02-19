@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - BookSelling</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="logo" href="/">BookSelling</a>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/categories.html">Categories</a></li>
+                    <li><a href="/aboutus.html">About us</a></li>
+                    <li><a href="/contactus.html">Contact us</a></li>
+                </ul>
+            </nav>
+            <div class="profile">
+                <button class="profile-btn" aria-expanded="false"><span id="profile-display">Profile</span> ▾</button>
+                <div class="profile-menu">
+                    <a class="btn login" href="/login.html" id="login-link">Log in</a>
+                    <a class="btn register" href="/register.html" id="register-link">Register</a>
+                    <a class="btn logout" href="#" id="logout-link" style="display:none">Log out</a>
+                </div>
+            </div>
+            <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+        </div>
+    </header>
+
+    <main class="container auth-section">
+        <div class="auth-container">
+            <div class="auth-card">
+                <h1>Welcome Back</h1>
+                <p class="lead">Log in to your account</p>
+                
+                <div id="message"></div>
+
+                <form class="auth-form" id="login-form">
+                    <input type="email" id="email" placeholder="Email" required>
+                    <input type="password" id="password" placeholder="Password" required>
+                    <button type="submit" class="auth-btn">Log In</button>
+                </form>
+
+                <a href="/register.html" class="auth-link">Don't have an account? Register here</a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div class="footer-col">
+                <h4>About</h4>
+                <p>BookSelling is a professional marketplace for readers and sellers.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick links</h4>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/categories.html">Categories</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <span>© <span id="year"></span> BookSelling. All rights reserved.</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="api.js"></script>
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        const form = document.getElementById('login-form');
+        const messageDiv = document.getElementById('message');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            messageDiv.innerHTML = '';
+
+            try {
+                const result = await Auth.login(email, password);
+                
+                if (result.token) {
+                    messageDiv.innerHTML = '<div class="auth-success">Login successful! Redirecting...</div>';
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1500);
+                } else {
+                    messageDiv.innerHTML = `<div class="auth-error">${result.message || 'Login failed'}</div>`;
+                }
+            } catch (error) {
+                messageDiv.innerHTML = `<div class="auth-error">Error: ${error.message}</div>`;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Selling</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="logo" href="/">BookSelling</a>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/categories.html">Categories</a></li>
+                    <li><a href="/aboutus.html">About us</a></li>
+                    <li><a href="/contactus.html">Contact us</a></li>
+                </ul>
+            </nav>
+
+            <div class="profile">
+                <button class="profile-btn" aria-expanded="false"><span id="profile-display">Profile</span> ▾</button>
+                <div class="profile-menu">
+                    <a class="btn login" href="/login.html" id="login-link">Log in</a>
+                    <a class="btn register" href="/register.html" id="register-link">Register</a>
+                    <a class="btn logout" href="#" id="logout-link" style="display:none">Log out</a>
+                    <a class="btn" href="/profile.html" id="my-profile-link" style="display:none;background:var(--primary);color:#fff;margin-top:6px;text-align:center">My Profile</a>
+                </div>
+            </div>
+            <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+        </div>
+    </header>
+
+    <main class="container main-content">
+        <!-- Search -->
+        <section class="search-section">
+            <div class="search-box">
+                <input id="search-input" type="search" placeholder="Search books, authors, ISBN..." aria-label="Search books">
+                <select id="search-cat" aria-label="Category select">
+                    <option value="all">All categories</option>
+                    <option>Fiction</option>
+                    <option>Non-fiction</option>
+                    <option>Children</option>
+                    <option>Science</option>
+                    <option>Biographies</option>
+                    <option>Self-help</option>
+                </select>
+                <button id="search-go" class="btn search-btn">Search</button>
+            </div>
+        </section>
+
+        <!-- Promotion -->
+        <section class="promotion">
+            <div class="promo-inner">
+                <div class="promo-text">
+                    <h2>Spring Sale — Up to 40% Off</h2>
+                    <p>Limited time: discounts across selected fiction and non-fiction titles.</p>
+                </div>
+                <a class="btn promo-cta" href="/categories.html">Shop Offers</a>
+            </div>
+        </section>
+
+        <!-- Book Categories -->
+        <section class="categories">
+            <h2>Book Categories</h2>
+            <div class="categories-grid">
+                <a class="cat" href="/categories.html?cat=Fiction">Fiction</a>
+                <a class="cat" href="/categories.html?cat=Non-fiction">Non-fiction</a>
+                <a class="cat" href="/categories.html?cat=Children">Children</a>
+                <a class="cat" href="/categories.html?cat=Science">Science</a>
+                <a class="cat" href="/categories.html?cat=Biographies">Biographies</a>
+                <a class="cat" href="/categories.html?cat=Self-help">Self-help</a>
+            </div>
+        </section>
+
+        <!-- Book Feature (popular books) -->
+        <section class="featured-books">
+            <h2>Book Feature — Popular Now</h2>
+            <div class="book-grid" id="featured-books">
+                <!-- featured book cards rendered by script -->
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div class="footer-col">
+                <h4>About</h4>
+                <p>BookSelling is a professional marketplace for readers and sellers.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick links</h4>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/categories.html">Categories</a></li>
+                    <li><a href="/contactus.html">Contact us</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <p>Email: support@bookselling.example</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container" style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;align-items:center">
+                <span>© <span id="year"></span> BookSelling. All rights reserved.</span>
+                <a href="/terms-of-service.html" style="color:var(--primary);text-decoration:none;font-size:0.9rem">Terms</a>
+                <a href="/privacy-policy.html" style="color:var(--primary);text-decoration:none;font-size:0.9rem">Privacy</a>
+                <a href="/dmca.html" style="color:var(--primary);text-decoration:none;font-size:0.9rem">DMCA</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="api.js"></script>
+    <script>
+        // Initialize page
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        const navToggle = document.querySelector('.nav-toggle');
+        const mainNav = document.querySelector('.main-nav');
+        navToggle.addEventListener('click', () => {
+            mainNav.classList.toggle('open');
+        });
+
+        // Search functionality
+        const searchInput = document.getElementById('search-input');
+        const searchCat = document.getElementById('search-cat');
+        const searchGo = document.getElementById('search-go');
+        function goSearch(){
+            const q = encodeURIComponent(searchInput.value.trim());
+            const cat = encodeURIComponent(searchCat.value);
+            if(!q && (cat === 'all')) return;
+            const url = '/categories.html?q='+q+'&cat='+cat;
+            window.location.href = url;
+        }
+        searchGo.addEventListener('click', goSearch);
+        searchInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') goSearch(); });
+
+        // Profile dropdown
+        const profileBtn = document.querySelector('.profile-btn');
+        const profileMenu = document.querySelector('.profile-menu');
+        profileBtn.addEventListener('click', () => {
+            const expanded = profileBtn.getAttribute('aria-expanded') === 'true';
+            profileBtn.setAttribute('aria-expanded', String(!expanded));
+            profileMenu.classList.toggle('open');
+        });
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.profile')) {
+                profileMenu.classList.remove('open');
+                profileBtn.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        // Update profile menu based on login status
+        function updateProfileMenu() {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            const profileDisplay = document.getElementById('profile-display');
+            const loginLink = document.getElementById('login-link');
+            const registerLink = document.getElementById('register-link');
+            const logoutLink = document.getElementById('logout-link');
+            const myProfileLink = document.getElementById('my-profile-link');
+            
+            if (token && user) {
+                profileDisplay.textContent = user.firstName || 'Profile';
+                loginLink.style.display = 'none';
+                registerLink.style.display = 'none';
+                logoutLink.style.display = 'block';
+                myProfileLink.style.display = 'block';
+                
+                if (!logoutLink.hasListener) {
+                    logoutLink.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user');
+                        window.location.href = '/';
+                    });
+                    logoutLink.hasListener = true;
+                }
+            } else {
+                profileDisplay.textContent = 'Profile';
+                loginLink.style.display = 'block';
+                registerLink.style.display = 'block';
+                logoutLink.style.display = 'none';
+                myProfileLink.style.display = 'none';
+            }
+        }
+        
+        updateProfileMenu();
+
+        // Load featured books from API
+        async function loadFeaturedBooks() {
+            try {
+                const response = await fetch('/api/books?limit=5');
+                const data = await response.json();
+                const books = data.books || [];
+                
+                const featuredEl = document.getElementById('featured-books');
+                featuredEl.innerHTML = books.map((book, idx) => `
+                    <article class="book-card">
+                        <img class="book-img" src="${book.image}" alt="Cover of ${book.title}">
+                        <div class="book-info">
+                            <div class="book-meta">
+                                <div>
+                                    <h3 class="book-title">${book.title}</h3>
+                                    <p class="book-author">by ${book.author}</p>
+                                    <p class="book-cat">${book.category}</p>
+                                </div>
+                                <div>
+                                    <div class="price">$${book.price.toFixed(2)}</div>
+                                    <button class="view-btn" data-id="${book._id}">View details</button>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                `).join('');
+                
+                // Add click handlers for view buttons
+                document.querySelectorAll('.view-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const bookId = e.target.dataset.id;
+                        // Could open a modal or redirect to book details page
+                        alert('Book details for ID: ' + bookId);
+                    });
+                });
+            } catch (error) {
+                console.error('Error loading books:', error);
+            }
+        }
+
+        loadFeaturedBooks();
+    </script>
+</body>
+</html>
