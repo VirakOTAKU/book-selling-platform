@@ -1,8 +1,15 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-const { initializeDatabase } = require('./database');
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { initializeDatabase } from './database.js';
+import authRoutes from './routes/auth.js';
+import booksRoutes from './routes/books.js';
+import usersRoutes from './routes/users.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -12,9 +19,9 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
 
 // Routes
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/books', require('./routes/books'));
-app.use('/api/users', require('./routes/users'));
+app.use('/api/auth', authRoutes);
+app.use('/api/books', booksRoutes);
+app.use('/api/users', usersRoutes);
 
 // Serve frontend
 app.get('/', (req, res) => {

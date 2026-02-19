@@ -1,14 +1,13 @@
-const express = require('express');
-const { db, Database_Helper } = require('../database');
-const { authenticate } = require('../middleware/auth');
+import express from 'express';
+import { Database_Helper } from '../database.js';
+import { authenticate } from '../middleware/auth.js';
 
 const router = express.Router();
 
 // Get user profile
 router.get('/profile', authenticate, (req, res) => {
   try {
-    const stmt = db.prepare('SELECT * FROM users WHERE id = ?');
-    const user = stmt.get(req.user.userId);
+    const user = Database_Helper.getUserById(req.user.userId);
     
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -23,18 +22,14 @@ router.get('/profile', authenticate, (req, res) => {
 });
 
 // Update user profile
-router.put('/profile', authenticate, (req, res) => {
+router.put('/profile', authenticate, async (req, res) => {
   try {
     const { firstName, lastName, phone, bio } = req.body;
     
-    const updateStmt = db.prepare(
-      'UPDATE users SET firstName = ?, lastName = ?, phone = ?, bio = ?, updatedAt = CURRENT_TIMESTAMP WHERE id = ?'
-    );
-    updateStmt.run(firstName, lastName, phone, bio, req.user.userId);
+    await Database_Helper.updateUser(req.user.userId, { firstName, lastName, phone, bio });
 
     // Return updated user
-    const stmt = db.prepare('SELECT * FROM users WHERE id = ?');
-    const user = stmt.get(req.user.userId);
+    const user = Database_Helper.getUserById(req.user.userId);
     delete user.password;
     
     res.json(user);
@@ -43,4 +38,4 @@ router.put('/profile', authenticate, (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

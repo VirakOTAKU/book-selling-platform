@@ -1,6 +1,10 @@
-const { Low, JSONFile } = require('lowdb');
-const path = require('path');
-const fs = require('fs');
+import { Low, JSONFile } from 'lowdb';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Ensure data directory exists
 const dataDir = path.join(__dirname, '../data');
@@ -30,7 +34,7 @@ async function initializeDatabase() {
 }
 
 // Helper functions
-const Database_Helper = {
+export const Database_Helper = {
   getUser: (email) => {
     return db.data.users.find(u => u.email === email);
   },
@@ -39,7 +43,7 @@ const Database_Helper = {
     return db.data.users.find(u => u.id === id);
   },
 
-  createUser: (firstName, lastName, email, hashedPassword) => {
+  createUser: async (firstName, lastName, email, hashedPassword) => {
     const id = Math.max(...db.data.users.map(u => u.id || 0), 0) + 1;
     const newUser = {
       id,
@@ -56,7 +60,7 @@ const Database_Helper = {
       updatedAt: new Date().toISOString()
     };
     db.data.users.push(newUser);
-    db.write();
+    await db.write();
     return { lastID: id };
   },
 
@@ -103,7 +107,7 @@ const Database_Helper = {
     return db.data.books.find(b => b.id === parseInt(id));
   },
 
-  createBook: (title, author, category, price, description, sellerId) => {
+  createBook: async (title, author, category, price, description, sellerId) => {
     const id = Math.max(...db.data.books.map(b => b.id || 0), 0) + 1;
     const newBook = {
       id,
@@ -122,11 +126,11 @@ const Database_Helper = {
       updatedAt: new Date().toISOString()
     };
     db.data.books.push(newBook);
-    db.write();
+    await db.write();
     return { lastID: id };
   },
 
-  updateBook: (id, data) => {
+  updateBook: async (id, data) => {
     const bookIndex = db.data.books.findIndex(b => b.id === parseInt(id));
     if (bookIndex !== -1) {
       db.data.books[bookIndex] = {
@@ -134,16 +138,16 @@ const Database_Helper = {
         ...data,
         updatedAt: new Date().toISOString()
       };
-      db.write();
+      await db.write();
     }
   },
 
-  deleteBook: (id) => {
+  deleteBook: async (id) => {
     db.data.books = db.data.books.filter(b => b.id !== parseInt(id));
-    db.write();
+    await db.write();
   },
 
-  updateUser: (userId, data) => {
+  updateUser: async (userId, data) => {
     const userIndex = db.data.users.findIndex(u => u.id === userId);
     if (userIndex !== -1) {
       db.data.users[userIndex] = {
@@ -151,9 +155,9 @@ const Database_Helper = {
         ...data,
         updatedAt: new Date().toISOString()
       };
-      db.write();
+      await db.write();
     }
   }
 };
 
-module.exports = { db, Database_Helper, initializeDatabase };
+export { db, initializeDatabase };

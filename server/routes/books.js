@@ -1,7 +1,7 @@
-const express = require('express');
-const { body, validationResult } = require('express-validator');
-const { Database_Helper } = require('../database');
-const { authenticate, authorize } = require('../middleware/auth');
+import express from 'express';
+import { body, validationResult } from 'express-validator';
+import { Database_Helper } from '../database.js';
+import { authenticate, authorize } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -47,7 +47,7 @@ router.post('/', authenticate, authorize('seller', 'admin'), [
   body('author').trim().notEmpty(),
   body('price').isFloat({ min: 0 }),
   body('category').isIn(['Fiction', 'Non-fiction', 'Children', 'Science', 'Biographies', 'Self-help'])
-], (req, res) => {
+], async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -55,7 +55,7 @@ router.post('/', authenticate, authorize('seller', 'admin'), [
     }
 
     const { title, author, category, price, description } = req.body;
-    const result = Database_Helper.createBook(title, author, category, price, description, req.user.userId);
+    const result = await Database_Helper.createBook(title, author, category, price, description, req.user.userId);
 
     const book = Database_Helper.getBookById(result.lastID);
     res.status(201).json(book);
@@ -65,7 +65,7 @@ router.post('/', authenticate, authorize('seller', 'admin'), [
 });
 
 // Update book
-router.put('/:id', authenticate, authorize('seller', 'admin'), (req, res) => {
+router.put('/:id', authenticate, authorize('seller', 'admin'), async (req, res) => {
   try {
     const book = Database_Helper.getBookById(req.params.id);
     if (!book) {
@@ -85,7 +85,7 @@ router.put('/:id', authenticate, authorize('seller', 'admin'), (req, res) => {
       }
     }
 
-    Database_Helper.updateBook(req.params.id, updateData);
+    await Database_Helper.updateBook(req.params.id, updateData);
     const updatedBook = Database_Helper.getBookById(req.params.id);
     res.json(updatedBook);
   } catch (error) {
@@ -94,7 +94,7 @@ router.put('/:id', authenticate, authorize('seller', 'admin'), (req, res) => {
 });
 
 // Delete book
-router.delete('/:id', authenticate, authorize('seller', 'admin'), (req, res) => {
+router.delete('/:id', authenticate, authorize('seller', 'admin'), async (req, res) => {
   try {
     const book = Database_Helper.getBookById(req.params.id);
     if (!book) {
@@ -105,11 +105,11 @@ router.delete('/:id', authenticate, authorize('seller', 'admin'), (req, res) => 
       return res.status(403).json({ message: 'Not authorized' });
     }
 
-    Database_Helper.deleteBook(req.params.id);
+    await Database_Helper.deleteBook(req.params.id);
     res.json({ message: 'Book deleted' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-module.exports = router;
+export default router;

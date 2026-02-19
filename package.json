@@ -1,6 +1,7 @@
 {
   "name": "book-selling-platform",
   "version": "1.0.0",
+  "type": "module",
   "description": "Professional book selling platform with Node.js and MongoDB",
   "main": "server/index.js",
   "scripts": {

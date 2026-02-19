@@ -1,8 +1,8 @@
-const express = require('express');
-const jwt = require('jsonwebtoken');
-const bcryptjs = require('bcryptjs');
-const { body, validationResult } = require('express-validator');
-const { Database_Helper } = require('../database');
+import express from 'express';
+import jwt from 'jsonwebtoken';
+import bcryptjs from 'bcryptjs';
+import { body, validationResult } from 'express-validator';
+import { Database_Helper } from '../database.js';
 
 const router = express.Router();
 
@@ -31,7 +31,7 @@ router.post('/register', [
     const hashedPassword = await bcryptjs.hash(password, 10);
 
     // Create user
-    const result = Database_Helper.createUser(firstName, lastName, email, hashedPassword);
+    const result = await Database_Helper.createUser(firstName, lastName, email, hashedPassword);
     const userId = result.lastID;
 
     // Create JWT token
@@ -102,4 +102,4 @@ router.post('/login', [
   }
 });
 
-module.exports = router;
+export default router;
