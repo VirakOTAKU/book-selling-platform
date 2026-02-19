@@ -12,9 +12,18 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
 
 // Database connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/book-selling')
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.log('MongoDB connection error:', err));
+const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/book-selling';
+console.log('Connecting to MongoDB...');
+
+mongoose.connect(mongoUri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+  .then(() => console.log('✅ Connected to MongoDB'))
+  .catch(err => {
+    console.error('❌ MongoDB connection error:', err.message);
+    // Continue running even if DB connection fails
+  });
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
