@@ -1,17 +1,18 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const { validate, validationResult } = require('express-validator');
-const User = require('../models/User');
+const bcryptjs = require('bcryptjs');
+const { body, validationResult } = require('express-validator');
+const { Database_Helper } = require('../database');
 
 const router = express.Router();
 
 // Register
-router.post('/register', validate([
-  require('express-validator').body('email').isEmail(),
-  require('express-validator').body('password').isLength({ min: 6 }),
-  require('express-validator').body('firstName').trim().notEmpty(),
-  require('express-validator').body('lastName').trim().notEmpty()
-]), async (req, res) => {
+router.post('/register', [
+  body('email').isEmail(),
+  body('password').isLength({ min: 6 }),
+  body('firstName').trim().notEmpty(),
+  body('lastName').trim().notEmpty()
+], async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -21,24 +22,22 @@ router.post('/register', validate([
     const { email, password, firstName, lastName } = req.body;
 
     // Check if user exists
-    let user = await User.findOne({ email });
-    if (user) {
+    const existingUser = Database_Helper.getUser(email);
+    if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    user = new User({
-      email,
-      password,
-      firstName,
-      lastName
-    });
+    // Hash password
+    const hashedPassword = await bcryptjs.hash(password, 10);
 
-    await user.save();
+    // Create user
+    const result = Database_Helper.createUser(firstName, lastName, email, hashedPassword);
+    const userId = result.lastID;
 
     // Create JWT token
     const token = jwt.sign(
-      { userId: user._id, email: user.email, role: user.role },
-      process.env.JWT_SECRET,
+      { userId, email, role: 'customer' },
+      process.env.JWT_SECRET || 'your-secret-key',
       { expiresIn: '7d' }
     );
 
@@ -46,11 +45,11 @@ router.post('/register', validate([
       message: 'User registered successfully',
       token,
       user: {
-        id: user._id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        role: user.role
+        id: userId,
+        email,
+        firstName,
+        lastName,
+        role: 'customer'
       }
     });
   } catch (error) {
@@ -59,10 +58,10 @@ router.post('/register', validate([
 });
 
 // Login
-router.post('/login', validate([
-  require('express-validator').body('email').isEmail(),
-  require('express-validator').body('password').notEmpty()
-]), async (req, res) => {
+router.post('/login', [
+  body('email').isEmail(),
+  body('password').notEmpty()
+], async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -71,19 +70,19 @@ router.post('/login', validate([
 
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email }).select('+password');
+    const user = Database_Helper.getUser(email);
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    const isMatch = await user.comparePassword(password);
+    const isMatch = await bcryptjs.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     const token = jwt.sign(
-      { userId: user._id, email: user.email, role: user.role },
-      process.env.JWT_SECRET,
+      { userId: user.id, email: user.email, role: user.role },
+      process.env.JWT_SECRET || 'your-secret-key',
       { expiresIn: '7d' }
     );
 
@@ -91,7 +90,7 @@ router.post('/login', validate([
       message: 'Login successful',
       token,
       user: {
-        id: user._id,
+        id: user.id,
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,

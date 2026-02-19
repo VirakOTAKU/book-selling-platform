@@ -9,3 +9,6 @@ services:
       - key: NODE_ENV
         scope: runtime
         value: production
+      - key: JWT_SECRET
+        scope: runtime
+        value: change-this-to-a-strong-secret-key
