@@ -2,6 +2,7 @@ import { Low, JSONFile } from 'lowdb';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import bcryptjs from 'bcryptjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,9 +28,30 @@ async function initializeDatabase() {
       orders: [],
       orderItems: []
     };
-    await db.write();
+  }
+
+  // Create default admin account if no users exist
+  if (db.data.users.length === 0) {
+    const hashedPassword = await bcryptjs.hash('admin123', 10);
+    const adminUser = {
+      id: 1,
+      firstName: 'Admin',
+      lastName: 'User',
+      email: 'admin@bookstore.com',
+      password: hashedPassword,
+      phone: '',
+      role: 'admin',
+      bio: 'System Administrator',
+      profilePicture: null,
+      isVerified: 1,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    db.data.users.push(adminUser);
+    console.log('✅ Default admin account created: admin@bookstore.com / admin123');
   }
   
+  await db.write();
   console.log('✅ Lowdb database initialized');
 }
 

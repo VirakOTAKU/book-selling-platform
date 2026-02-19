@@ -1,5 +1,20 @@
 {
-  "users": [],
+  "users": [
+    {
+      "id": 1,
+      "firstName": "Admin",
+      "lastName": "User",
+      "email": "admin@bookstore.com",
+      "password": "$2a$10$WEtipRyYAddWRgjNGiz/aeJKGITj4Y4V3Ix6hf0tdTvBAEAmG8cMC",
+      "phone": "",
+      "role": "admin",
+      "bio": "System Administrator",
+      "profilePicture": null,
+      "isVerified": 1,
+      "createdAt": "2026-02-19T09:41:46.963Z",
+      "updatedAt": "2026-02-19T09:41:46.965Z"
+    }
+  ],
   "books": [],
   "orders": [],
   "orderItems": []
